@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+  <title> Object Tracking Demo</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/2.7.0/fabric.min.js"></script>
+
+  <script type="text/javascript" src="{{ url_for('static', filename='js/tracking.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/tracking_demo.js') }}"></script>
+  <style type="text/css">
+    .tracking_res {
+      max-height: 300px;
+      max-width: 300px;
+      background-color: grey;
+    }
+
+    .tracking_row {
+      border: 1px solid grey;
+      border-radius: 15px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      margin: 15px;
+    }
+
+    .title {
+      padding: 15px;
+      font-weight: bold;
+    }
+
+    .header {
+      background-color: #C5DDFD;
+      padding: 10px;
+    }
+
+    .h_text {
+      font-weight: bold;
+      font-size: 30px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container-fluid">
+    <nav class="navbar navbar-light bg-light header">
+      <span class="navbar-brand mb-0 h_text">Object tracking</span>
+    </nav>
+    <div>
+      <form action="" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="id_video" id="id_video" />
+        <p><input type="file" name="file" /></p>
+        <p><input type="submit" /></p>
+      </form>
+    </div>
+    <div id="appending_container"></div>
+  </div>
+</body>
+
+</html>
