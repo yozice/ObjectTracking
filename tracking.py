@@ -17,8 +17,13 @@ def read_video(path):
 
 
 def detect_object(path, rect_coords):
-    tracker_type = "KCF"
-    tracker = cv2.TrackerKCF_create()
+    tracker_type = "MOSSE"
+    if tracker_type == "KCF":
+        tracker = cv2.TrackerKCF_create()
+    elif tracker_type == "MOSSE":
+        tracker = cv2.legacy.TrackerMOSSE_create()
+    elif tracker_type == "GOTURN":
+        tracker = cv2.TrackerGOTURN_create()
 
     scale_factor = rect_coords["scale_factor"]
     video = read_video(path)
