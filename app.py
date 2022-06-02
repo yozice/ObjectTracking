@@ -5,7 +5,7 @@ import shutil
 import cv2
 from flask import Flask, Response, redirect, render_template, request, url_for
 
-from tracking import detect_object, read_video
+from src.tracking import detect_object, read_video
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
 

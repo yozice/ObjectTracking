@@ -16,8 +16,22 @@ def read_video(path):
     return camera
 
 
-def detect_object(path, rect_coords):
-    tracker_type = "MOSSE"
+def get_bbox(rect):
+    bbox = tuple(
+        map(
+            int,
+            [
+                rect["left"],
+                rect["top"],
+                rect["width"],
+                rect["height"],
+            ],
+        )
+    )
+    return bbox
+
+
+def init_tracker(tracker_type):
     if tracker_type == "KCF":
         tracker = cv2.TrackerKCF_create()
     elif tracker_type == "MOSSE":
@@ -25,25 +39,20 @@ def detect_object(path, rect_coords):
     elif tracker_type == "GOTURN":
         tracker = cv2.TrackerGOTURN_create()
     else:
-        return None
+        tracker = None
+    return tracker
 
+
+def detect_object(path, rect_coords):
+    tracker = init_tracker("MOSSE")
     scale_factor = rect_coords["scale_factor"]
     video = read_video(path)
 
     _, frame = video.read()
     frame = resize_frame(frame, scale_factor)
 
-    bbox = tuple(
-        map(
-            int,
-            [
-                rect_coords["left"],
-                rect_coords["top"],
-                rect_coords["width"],
-                rect_coords["height"],
-            ],
-        )
-    )
+    bbox = get_bbox(rect_coords)
+
     is_tracker_inited = tracker.init(frame, bbox)
 
     while True:
