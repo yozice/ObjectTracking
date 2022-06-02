@@ -5,7 +5,7 @@ import shutil
 import cv2
 from flask import Flask, Response, redirect, render_template, request, url_for
 
-from tracking import *
+from tracking import detect_object, read_video
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
 
@@ -18,11 +18,11 @@ def generate_first_frame(path):
     success, frame = camera.read()
     if not success:
         return None
-    else:
-        ret, buffer = cv2.imencode(".jpg", frame)
 
-        frame = buffer.tobytes()
-        return frame
+    _, buffer = cv2.imencode(".jpg", frame)
+
+    frame = buffer.tobytes()
+    return frame
 
 
 @app.route("/")
@@ -33,22 +33,22 @@ def index():
 @app.route("/", methods=["GET", "POST"])
 def upload_file():
     if request.method == "POST":
-        f = request.files.get("file")
-        id = request.form["id_video"]
-        dir = f"{UPLOAD_DIR}/{id}"
+        request_file = request.files.get("file")
+        id_video = request.form["id_video"]
+        dir_id = f"{UPLOAD_DIR}/{id_video}"
         try:
-            shutil.rmtree(dir)
-        except:
+            shutil.rmtree(dir_id)
+        except OSError:
             pass
-        os.mkdir(dir)
-        path = f"{dir}/video.mp4"
-        f.save(path)
+        os.mkdir(dir_id)
+        path = f"{dir_id}/video.mp4"
+        request_file.save(path)
         first_frame = generate_first_frame(path)
 
-        with open(f"{dir}/preview.jpg", "wb") as f:
-            f.write(first_frame)
+        with open(f"{dir_id}/preview.jpg", "wb") as file:
+            file.write(first_frame)
 
-        return redirect(url_for("index", id_video=id))
+        return redirect(url_for("index", id_video=id_video))
     return redirect(url_for("index"))
 
 

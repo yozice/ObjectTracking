@@ -24,19 +24,18 @@ def detect_object(path, rect_coords):
         tracker = cv2.legacy.TrackerMOSSE_create()
     elif tracker_type == "GOTURN":
         tracker = cv2.TrackerGOTURN_create()
+    else:
+        return None
 
     scale_factor = rect_coords["scale_factor"]
     video = read_video(path)
 
-    ok, frame = video.read()
+    _, frame = video.read()
     frame = resize_frame(frame, scale_factor)
-    print(frame.shape)
-    if not ok:
-        video.release()
-        video = read_video(path)
+
     bbox = tuple(
         map(
-            lambda x: int(x),
+            int,
             [
                 rect_coords["left"],
                 rect_coords["top"],
@@ -45,22 +44,22 @@ def detect_object(path, rect_coords):
             ],
         )
     )
-    ok = tracker.init(frame, bbox)
+    is_tracker_inited = tracker.init(frame, bbox)
 
     while True:
-        ok, frame = video.read()
+        _, frame = video.read()
         frame = resize_frame(frame, scale_factor)
 
         timer = cv2.getTickCount()
 
-        ok, bbox = tracker.update(frame)
+        is_tracker_inited, bbox = tracker.update(frame)
 
         fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
 
-        if ok:
-            p1 = (int(bbox[0]), int(bbox[1]))
-            p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
-            cv2.rectangle(frame, p1, p2, (255, 0, 0), 2, 1)
+        if is_tracker_inited:
+            left_top_coord = (int(bbox[0]), int(bbox[1]))
+            right_bot_coord = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
+            cv2.rectangle(frame, left_top_coord, right_bot_coord, (255, 0, 0), 2, 1)
         else:
             cv2.putText(
                 frame,
@@ -83,7 +82,7 @@ def detect_object(path, rect_coords):
             2,
         )
 
-        ret, buffer = cv2.imencode(".jpg", frame)
+        _, buffer = cv2.imencode(".jpg", frame)
 
         frame = buffer.tobytes()
 
