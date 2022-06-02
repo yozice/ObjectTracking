@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import cv2
 import pytest
 from src.tracking import get_bbox, init_tracker
